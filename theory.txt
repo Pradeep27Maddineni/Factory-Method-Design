@@ -110,3 +110,74 @@ Supports the Open/Closed Principle, allowing for the addition of new product typ
 Promotes code reusability by defining common creation logic in superclass methods.
 
 The Factory Method Design Pattern is a powerful tool for creating objects in a flexible, decoupled, and extensible manner. By encapsulating object creation logic in subclasses, the Factory Method pattern promotes code reusability, maintainability, and scalability. While it may introduce some complexity, especially in large codebases, its benefits outweigh the drawbacks, making it a valuable addition to any developer’s toolkit.
+
+Example:
+
+#include <iostream>
+#include <string>
+#include <memory> // For smart pointers
+using namespace std;
+
+// Abstract base class (Interface)
+class Notification {
+public:
+    virtual void send(const string& message) = 0; // Pure virtual function
+    virtual ~Notification() {} // Virtual destructor
+};
+
+// Concrete Products
+class EmailNotification : public Notification {
+public:
+    void send(const string& message) override {
+        cout << "Email: " << message << endl;
+    }
+};
+
+class SMSNotification : public Notification {
+public:
+    void send(const string& message) override {
+        cout << "SMS: " << message << endl;
+    }
+};
+
+class PushNotification : public Notification {
+public:
+    void send(const string& message) override {
+        cout << "Push notification: " << message << endl;
+    }
+};
+
+// Simple Factory
+class SimpleNotificationFactory {
+public:
+    static unique_ptr<Notification> createNotification(const string& type) {
+        if (type == "EMAIL") {
+            return make_unique<EmailNotification>();
+        } else if (type == "SMS") {
+            return make_unique<SMSNotification>();
+        } else if (type == "PUSH") {
+            return make_unique<PushNotification>();
+        } else {
+            throw runtime_error(type + " not supported yet.");
+        }
+    }
+};
+
+// Usage
+int main() {
+    try {
+        auto emailSender = SimpleNotificationFactory::createNotification("EMAIL");
+        emailSender->send("Hello via Email!");
+
+        auto smsSender = SimpleNotificationFactory::createNotification("SMS");
+        smsSender->send("Hello via SMS!");
+
+        auto pushSender = SimpleNotificationFactory::createNotification("PUSH");
+        pushSender->send("Hello via Push Notification!");
+    }
+    catch (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
+    }
+
+    return 0;
+}
